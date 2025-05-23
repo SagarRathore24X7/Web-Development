@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Glass Clock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/Web-Develpoment/Portfolio Website/css/style-clock.css">
+</head>
+<body class="neon-blue">
+    <div class="container">
+        <div class="greeting">Good Evening!</div>
+        
+        <div class="clock-container">
+            <div class="clock">
+                <div class="hour">
+                    <div class="hr-hand" id="hr"></div>
+                </div>
+                <div class="min">
+                    <div class="min-hand" id="mn"></div>
+                </div>
+                <div class="sec">
+                    <div class="sec-hand" id="sc"></div>
+                    <div class="glow-trail" id="glow"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="digital-time">
+            <div class="flip-digit"><span class="digit current" id="hour1">0</span></div>
+            <div class="flip-digit"><span class="digit current" id="hour2">0</span></div>
+            <span>:</span>
+            <div class="flip-digit"><span class="digit current" id="min1">0</span></div>
+            <div class="flip-digit"><span class="digit current" id="min2">0</span></div>
+            <span>:</span>
+            <div class="flip-digit"><span class="digit current" id="sec1">0</span></div>
+            <div class="flip-digit"><span class="digit current" id="sec2">0</span></div>
+            <span class="period" id="ampm">AM</span>
+        </div>
+        
+        <div class="date-display" id="date">Monday, April 7, 2025</div>
+        
+        <div class="features-container">
+            <div class="weather-widget">
+                <div class="weather-icon">⛅</div>
+                <div class="weather-info">
+                    <div class="weather-temp">72°F</div>
+                    <div>Partly Cloudy</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="themeBtn">🎨 Theme</button>
+            <button class="control-btn" id="alarmBtn">⏰ Alarm</button>
+            <button class="control-btn" id="timezoneBtn">🌍 Timezone</button>
+            <button class="control-btn" id="soundBtn">🔊 Sound</button>
+        </div>
+    </div>
+    
+    <!-- Theme Modal -->
+    <div class="modal" id="themeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Theme</h2>
+                <button class="close-modal" data-modal="themeModal">×</button>
+            </div>
+            <div class="theme-options">
+                <div class="theme-option active" data-theme="neon-blue">Neon Blue</div>
+                <div class="theme-option" data-theme="sunrise-gold">Sunrise Gold</div>
+                <div class="theme-option" data-theme="matrix-green">Matrix Green</div>
+                <div class="theme-option" data-theme="monochrome">Monochrome</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alarm Modal -->
+    <div class="modal" id="alarmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Set Alarm</h2>
+                <button class="close-modal" data-modal="alarmModal">×</button>
+            </div>
+            <form class="alarm-form" id="alarmForm">
+                <div class="form-group">
+                    <label for="alarmTime">Time</label>
+                    <input type="time" id="alarmTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="alarmTitle">Title</label>
+                    <input type="text" id="alarmTitle" placeholder="e.g., Meeting, Wake up">
+                </div>
+                <button type="submit" class="btn-set">Set Alarm</button>
+            </form>
+            <div class="alarms-list" id="alarmsList">
+                <!-- Alarm items will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Timezone Modal -->
+    <div class="modal" id="timezoneModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Timezone</h2>
+                <button class="close-modal" data-modal="timezoneModal">×</button>
+            </div>
+            <div class="form-group">
+                <label for="timezone">Timezone</label>
+                <select id="timezone">
+                    <option value="local">Local Time</option>
+                    <option value="America/New_York">New York</option>
+                    <option value="Europe/London">London</option>
+                    <option value="Asia/Tokyo">Tokyo</option>
+                    <option value="Australia/Sydney">Sydney</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="audio-control" id="audioControl">
+        <div class="audio-icon">🔊</div>
+    </div>
+    
+    <div class="notification" id="notification">
+        Alarm: Meeting time!
+    </div>
+
+</body>
+</html>

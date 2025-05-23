@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Rock Paper Scissors</title>
+    <link rel="stylesheet" href="/Web-Develpoment/Portfolio Website/css/style-rock-paper-scissor.css">
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Rock Paper Scissors</h1>
+            <div class="subtitle">Premium Edition</div>
+        </header>
+        
+        <div class="setup-screen">
+            <h2 class="setup-title">Game Setup</h2>
+            <div class="rounds-container">
+                <h3 class="rounds-title">Number of Rounds</h3>
+                <div class="rounds-display" id="rounds-display">5</div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="15" value="5" class="slider" id="rounds-slider">
+                </div>
+            </div>
+            <button class="start-button" id="start-game">Start Game</button>
+        </div>
+        
+        <div class="game-screen">
+            <div class="score-board">
+                <div class="score-card player-score">
+                    <h2>You</h2>
+                    <div class="score-value" id="player-score">0</div>
+                </div>
+                <div class="vs-container">VS</div>
+                <div class="score-card computer-score">
+                    <h2>Computer</h2>
+                    <div class="score-value" id="computer-score">0</div>
+                </div>
+            </div>
+            
+            <div class="battle-area">
+                <div class="player-selection">
+                    <div class="player-hand">
+                        <img src="/api/placeholder/180/180" alt="Player Hand" class="hand-image" id="player-hand">
+                    </div>
+                    <div class="selection-title">Your Choice</div>
+                </div>
+                
+                <div class="battle-status" id="battle-status">Fight!</div>
+                
+                <div class="computer-selection">
+                    <div class="computer-hand">
+                        <img src="/api/placeholder/180/180" alt="Computer Hand" class="hand-image" id="computer-hand">
+                    </div>
+                    <div class="selection-title">Computer's Choice</div>
+                </div>
+            </div>
+            
+            <div class="rounds-info">
+                <div id="round-text">Round 1 of 5</div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-button" data-choice="rock">
+                    <img src="https://cdn2.iconfinder.com/data/icons/hand-gestures-glyph/100/hand_gestures6glyph-04-512.png" alt="Rock">
+                </div>
+                <div class="control-button" data-choice="paper">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2541/2541988.png" alt="Paper">
+                </div>
+                <div class="control-button" data-choice="scissors">
+                    <img src="https://cdn-icons-png.flaticon.com/512/10363/10363577.png" alt="Scissors">
+                </div>
+            </div>
+        </div>
+        
+        <div class="end-screen" id="end-screen">
+            <h2 class="result-title">Game Over!</h2>
+            <div class="final-score" id="final-score">You: 0 - Computer: 0</div>
+            <div class="result-message" id="result-message">It's a tie!</div>
+            <button class="play-again" id="play-again">Play Again</button>
+        </div>
+    </div>
+    
+    <script src="/Web-Develpoment/Portfolio Website/js/script-rock-paper-scissor.js">
+        
+    </script>
+</body>
+</html>

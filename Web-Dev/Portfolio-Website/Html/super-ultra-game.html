@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Super Ultra Neon Tic Tac Toe</title>
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --dark-bg: #0a0a2e;
+            --glow-shadow: 0 0 10px, 0 0 20px, 0 0 30px;
+        }
+
+        body {
+            background: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            position: relative;
+            margin-top: 20px;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.05);
+            box-shadow: var(--glow-shadow) rgba(255, 255, 255, 0.1);
+        }
+
+        .cell.x {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .cell.o {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .cell.highlight {
+            animation: cell-highlight 1s infinite alternate;
+        }
+
+        .status {
+            font-size: 2em;
+            margin: 20px;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+            animation: pulse 2s infinite;
+        }
+
+        .btn {
+            background: none;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin: 20px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: var(--neon-pink);
+            color: var(--dark-bg);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 30px var(--neon-pink);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+
+        .btn:hover::before {
+            animation: shine 1.5s;
+        }
+
+        .btn.reload-btn {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .btn.reload-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .winning-line {
+            position: absolute;
+            height: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-cyan);
+            transform-origin: 0 50%;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .winning-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan), var(--neon-pink), var(--neon-cyan));
+            background-size: 400% 100%;
+            animation: flow-colors 2s linear infinite;
+        }
+
+        @keyframes flow-colors {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 400% 0%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes cell-pop {
+            0% { transform: scale(0); }
+            90% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes cell-highlight {
+            0% { box-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-cyan); }
+            100% { box-shadow: 0 0 15px var(--neon-pink), 0 0 30px var(--neon-cyan); }
+        }
+
+        @keyframes shine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+
+        @keyframes line-draw {
+            0% { width: 0; opacity: 0; }
+            100% { width: 100%; opacity: 1; }
+        }
+
+        @keyframes winning-celebration {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(2deg); }
+            75% { transform: rotate(-2deg); }
+        }
+
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border-radius: 50%;
+            animation: ripple-effect 0.6s linear;
+        }
+
+        @keyframes ripple-effect {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 200px; height: 200px; opacity: 0; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            opacity: 0.8;
+            pointer-events: none;
+            animation: confetti-fall 4s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: rgba(15, 15, 50, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.3);
+            text-align: center;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal h2 {
+            color: white;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .modal input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--neon-pink);
+            border-radius: 30px;
+            color: white;
+            padding: 12px 20px;
+            margin: 10px 0;
+            width: 100%;
+            font-size: 1.2em;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .modal input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .modal button {
+            background: none;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 12px 30px;
+            font-size: 1.2em;
+            margin-top: 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .modal button:hover {
+            background: var(--neon-pink);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        .player-names {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .player-x {
+            color: var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+
+        .player-o {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
+        .edit-names {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8em;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .edit-names:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">LOADING...</div>
+    <div class="player-names" id="playerNames"></div>
+    <div class="game-container" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+    <div class="buttons-container">
+        <button class="btn" onclick="resetGame()">New Game</button>
+        <button class="btn reload-btn" onclick="resetEverything()">Reload Page</button>
+    </div>
+
+    <div class="modal-overlay" id="nameModal">
+        <div class="modal">
+            <h2>Enter Player Names</h2>
+            <input type="text" id="player1Name" placeholder="Player X (Pink)" maxlength="15">
+            <input type="text" id="player2Name" placeholder="Player O (Cyan)" maxlength="15">
+            <button onclick="savePlayerNames()">Start Game</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPlayer = 'X';
+        let gameActive = true;
+        const cells = document.querySelectorAll('.cell');
+        const status = document.getElementById('status');
+        const board = document.getElementById('board');
+        const playerNames = document.getElementById('playerNames');
+        const nameModal = document.getElementById('nameModal');
+        const player1Input = document.getElementById('player1Name');
+        const player2Input = document.getElementById('player2Name');
+        let player1Name = localStorage.getItem('player1Name') || "Player X";
+        let player2Name = localStorage.getItem('player2Name') || "Player O";
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        // Check if first time visit
+        if (!localStorage.getItem('hasVisited')) {
+            setTimeout(() => {
+                nameModal.classList.add('active');
+                player1Input.focus();
+            }, 500);
+            localStorage.setItem('hasVisited', 'true');
+        } else {
+            updatePlayerNames();
+        }
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleCellClick);
+            cell.addEventListener('click', createRipple);
+        });
+
+        function savePlayerNames() {
+            if (player1Input.value.trim() !== "") {
+                player1Name = player1Input.value.trim();
+                localStorage.setItem('player1Name', player1Name);
+            }
+            
+            if (player2Input.value.trim() !== "") {
+                player2Name = player2Input.value.trim();
+                localStorage.setItem('player2Name', player2Name);
+            }
+            
+            nameModal.classList.remove('active');
+            updatePlayerNames();
+            updateStatus();
+        }
+
+        function updatePlayerNames() {
+            playerNames.innerHTML = `
+                <span class="player-x">${player1Name}</span> vs 
+                <span class="player-o">${player2Name}</span>
+                <button class="edit-names" onclick="editNames()">Edit Names</button>
+            `;
+            updateStatus();
+        }
+
+        function editNames() {
+            player1Input.value = player1Name;
+            player2Input.value = player2Name;
+            nameModal.classList.add('active');
+        }
+
+        function createRipple(e) {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = e.clientX - e.target.offsetLeft + 'px';
+            ripple.style.top = e.clientY - e.target.offsetTop + 'px';
+            e.target.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        function handleCellClick(e) {
+            const cell = e.target;
+            const index = cell.getAttribute('data-index');
+
+            if (cell.textContent !== '' || !gameActive) return;
+
+            cell.textContent = currentPlayer;
+            cell.classList.add(currentPlayer.toLowerCase());
+            cell.style.animation = 'cell-pop 0.3s ease';
+
+            const winCombination = checkWin();
+            if (winCombination) {
+                celebrateWin(winCombination);
+                return;
+            }
+
+            if (checkDraw()) {
+                status.textContent = "IT'S A DRAW!";
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            updateStatus();
+        }
+
+        function updateStatus() {
+            if (gameActive) {
+                const currentPlayerName = currentPlayer === 'X' ? player1Name : player2Name;
+                status.textContent = `${currentPlayerName}'S TURN`;
+                status.style.borderColor = currentPlayer === 'X' ? 'var(--neon-pink)' : 'var(--neon-cyan)';
+                status.style.textShadow = `0 0 10px ${currentPlayer === 'X' ? 'var(--neon-pink)' : 'var(--neon-cyan)'}`;
+            }
+        }
+
+        function checkWin() {
+            return winningCombinations.find(combination => 
+                combination.every(index => 
+                    cells[index].textContent === currentPlayer
+                )
+            );
+        }
+
+        function celebrateWin(combination) {
+            gameActive = false;
+            const winnerName = currentPlayer === 'X' ? player1Name : player2Name;
+            status.textContent = `${winnerName} WINS!`;
+            status.style.borderColor = currentPlayer === 'X' ? 'var(--neon-pink)' : 'var(--neon-cyan)';
+            status.style.textShadow = `0 0 10px ${currentPlayer === 'X' ? 'var(--neon-pink)' : 'var(--neon-cyan)'}`;
+            
+            // Highlight winning cells
+            combination.forEach(index => {
+                cells[index].classList.add('highlight');
+            });
+
+            // Add winning line with animation
+            drawWinningLine(combination);
+            
+            // Add board celebration animation
+            board.style.animation = 'winning-celebration 0.5s ease-in-out infinite';
+            
+            // Create confetti celebration
+            createConfetti(currentPlayer === 'X' ? 'var(--neon-pink)' : 'var(--neon-cyan)');
+        }
+
+        function drawWinningLine(combination) {
+            const firstCell = cells[combination[0]].getBoundingClientRect();
+            const lastCell = cells[combination[2]].getBoundingClientRect();
+            const boardRect = board.getBoundingClientRect();
+
+            const line = document.createElement('div');
+            line.className = 'winning-line';
+
+            const startX = firstCell.left - boardRect.left + firstCell.width/2;
+            const startY = firstCell.top - boardRect.top + firstCell.height/2;
+            const endX = lastCell.left - boardRect.left + lastCell.width/2;
+            const endY = lastCell.top - boardRect.top + lastCell.height/2;
+
+            const length = Math.sqrt((endX - startX)**2 + (endY - startY)**2);
+            const angle = Math.atan2(endY - startY, endX - startX);
+
+            line.style.width = '0';
+            line.style.left = startX + 'px';
+            line.style.top = startY + 'px';
+            line.style.transform = `rotate(${angle}rad)`;
+            
+            board.appendChild(line);
+            
+            // Animate line drawing
+            setTimeout(() => {
+                line.style.transition = 'width 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
+                line.style.width = length + 'px';
+            }, 100);
+        }
+
+        function createConfetti(color) {
+            const confettiCount = 100;
+            const colors = [color, 'white', '#00ffff', '#ff00ff'];
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        function checkDraw() {
+            return [...cells].every(cell => cell.textContent !== '');
+        }
+
+        function resetGame() {
+            currentPlayer = 'X';
+            gameActive = true;
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x', 'o', 'highlight');
+                cell.style.animation = '';
+            });
+            updateStatus();
+            board.style.animation = '';
+            board.querySelectorAll('.winning-line').forEach(line => line.remove());
+            document.querySelectorAll('.confetti').forEach(confetti => confetti.remove());
+        }
+
+        function resetEverything() {
+            // Clear localStorage items
+            localStorage.removeItem('player1Name');
+            localStorage.removeItem('player2Name');
+            localStorage.removeItem('hasVisited');
+            
+            // Reload the page
+            window.location.reload();
+        }
+
+        // Initialize the game
+        updatePlayerNames();
+    </script>
+</body>
+</html>

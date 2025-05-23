@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble Bounce Adventure</title>
+  <style>
+    :root {
+      --primary: #5e60ce;
+      --secondary: #64dfdf;
+      --accent: #ff5e78;
+      --dark: #0a1128;
+      --light: #f8f9fa;
+      --success: #06d6a0;
+      --gradient: linear-gradient(135deg, #5e60ce 0%, #64dfdf 100%);
+      --card-bg: rgba(10, 17, 40, 0.8);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Arial', sans-serif;
+    }
+    
+    body {
+      background-color: var(--dark);
+      color: var(--light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(94, 96, 206, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(100, 223, 223, 0.1) 0%, transparent 25%);
+    }
+    
+    .game-container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+    
+    .game-header {
+      background: var(--gradient);
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .game-title {
+      font-size: 24px;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      letter-spacing: 1px;
+    }
+    
+    .stats-container {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .stat {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-icon {
+      opacity: 0.8;
+    }
+    
+    .game-canvas-container {
+      position: relative;
+      height: 500px;
+      overflow: hidden;
+      background: rgba(10, 17, 40, 0.5);
+    }
+    
+    #gameCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .level-info {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(10, 17, 40, 0.7);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(4px);
+      z-index: 10;
+    }
+    
+    .game-controls {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 25px;
+      background: var(--card-bg);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .button {
+      background: var(--gradient);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      min-width: 120px;
+      text-align: center;
+    }
+    
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .button.secondary {
+      background: transparent;
+      border: 2px solid var(--secondary);
+    }
+    
+    .button.accent {
+      background: linear-gradient(135deg, var(--accent) 0%, #ff9e7d 100%);
+    }
+    
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(5px);
+    }
+    
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .modal-content {
+      background: var(--dark);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 550px;
+      width: 90%;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-title {
+      font-size: 28px;
+      margin-bottom: 20px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+    
+    .modal-text {
+      margin-bottom: 30px;
+      line-height: 1.6;
+      font-size: 16px;
+      color: rgba(248, 249, 250, 0.8);
+    }
+    
+    .modal-text strong {
+      color: var(--light);
+    }
+    
+    .level-badge {
+      display: inline-block;
+      background: var(--gradient);
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .score-display {
+      font-size: 48px;
+      font-weight: 800;
+      margin: 20px 0;
+      color: var(--secondary);
+    }
+    
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+      box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.1),
+                  inset 5px 5px 10px rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(1px);
+      opacity: 0.7;
+    }
+    
+    .particles-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      transform-origin: center;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+    
+    @keyframes shimmer {
+      0% {
+        background-position: -100% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+    
+    .achievement {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--success);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .achievement.active {
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .power-up {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 5;
+      animation: pulse 1.5s infinite, float 3s infinite;
+    }
+    
+    @media (max-width: 768px) {
+      .game-canvas-container {
+        height: 400px;
+      }
+      
+      .game-title {
+        font-size: 20px;
+      }
+      
+      .stat {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+      
+      .button {
+        padding: 8px 15px;
+        min-width: 100px;
+        font-size: 13px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .game-canvas-container {
+        height: 350px;
+      }
+      
+      .game-controls {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      
+      .button {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-header">
+      <div class="game-title">BUBBLE BOUNCE ADVENTURE</div>
+      <div class="stats-container">
+        <div class="stat">
+          <span class="stat-icon">🏆</span>
+          <span id="score">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">⭐</span>
+          <span id="stars">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="game-canvas-container">
+      <canvas id="gameCanvas"></canvas>
+      <div class="level-info">Level <span id="currentLevel">1</span></div>
+    </div>
+    
+    <div class="game-controls">
+      <button class="button secondary" id="resetBtn">Reset Level</button>
+      <button class="button" id="launchBtn">Launch Bubble</button>
+      <button class="button accent" id="powerupBtn">Power-Up</button>
+    </div>
+  </div>
+  
+  <div class="modal" id="welcomeModal">
+    <div class="modal-content">
+      <h2 class="modal-title">Bubble Bounce Adventure</h2>
+      <p class="modal-text">
+        Welcome to a world of colorful bubbles and exciting physics!
+        <br><br>
+        <strong>How to play:</strong>
+        <br>
+        1. Aim and launch bubbles to hit targets
+        <br>
+        2. Create chain reactions by connecting bubbles of the same color
+        <br>
+        3. Complete each level's objective to advance
+        <br>
+        4. Collect power-ups to help solve tricky levels
+        <br><br>
+        Are you ready for a bubbly adventure?
+      </p>
+      <button class="button" id="startBtn">Start Game</button>
+    </div>
+  </div>
+  
+  <div class="modal" id="levelCompleteModal">
+    <div class="modal-content">
+      <div class="level-badge">Level <span id="completedLevel">1</span> Complete!</div>
+      <h2 class="modal-title">Great Job!</h2>
+      <p class="modal-text">
+        You've cleared the level with style!
+      </p>
+      <div class="score-display">
+        <span id="levelScore">0</span> pts
+      </div>
+      <p class="modal-text">
+        Stars Earned: <span id="starsEarned">0</span>/3
+      </p>
+      <button class="button" id="nextLevelBtn">Next Level</button>
+    </div>
+  </div>
+  
+  <div class="modal" id="gameOverModal">
+    <div class="modal-content">
+      <h2 class="modal-title">Game Complete!</h2>
+      <p class="modal-text">
+        Congratulations on completing your bubble adventure!
+      </p>
+      <div class="score-display">
+        <span id="finalScore">0</span>
+      </div>
+      <p class="modal-text">
+        Total Stars: <span id="totalStars">0</span>
+        <br><br>
+        Ready for another round?
+      </p>
+      <button class="button" id="restartBtn">Play Again</button>
+    </div>
+  </div>
+  
+  <div class="achievement" id="achievement">
+    <span class="achievement-icon">🎯</span>
+    <span id="achievementText">Perfect Shot!</span>
+  </div>
+
+  <script>
+    // Game state
+    const game = {
+      canvas: null,
+      ctx: null,
+      width: 0,
+      height: 0,
+      bubbles: [],
+      targets: [],
+      obstacles: [],
+      powerUps: [],
+      particles: [],
+      gravity: 0.2,
+      friction: 0.99,
+      bounceFactor: 0.7,
+      score: 0,
+      stars: 0,
+      level: 1,
+      maxLevels: 5,
+      launchPower: 0,
+      aimAngle: 0,
+      isCharging: false,
+      isAiming: false,
+      bubblesRemaining: 5,
+      levelObjective: 0,
+      levelObjectiveCompleted: 0,
+      canLaunch: true,
+      activePowerUp: null,
+      gameActive: false
+    };
+    
+    // DOM elements
+    const elements = {
+      gameCanvas: document.getElementById('gameCanvas'),
+      scoreEl: document.getElementById('score'),
+      starsEl: document.getElementById('stars'),
+      currentLevelEl: document.getElementById('currentLevel'),
+      launchBtn: document.getElementById('launchBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      powerupBtn: document.getElementById('powerupBtn'),
+      welcomeModal: document.getElementById('welcomeModal'),
+      levelCompleteModal: document.getElementById('levelCompleteModal'),
+      gameOverModal: document.getElementById('gameOverModal'),
+      completedLevelEl: document.getElementById('completedLevel'),
+      levelScoreEl: document.getElementById('levelScore'),
+      starsEarnedEl: document.getElementById('starsEarned'),
+      finalScoreEl: document.getElementById('finalScore'),
+      totalStarsEl: document.getElementById('totalStars'),
+      startBtn: document.getElementById('startBtn'),
+      nextLevelBtn: document.getElementById('nextLevelBtn'),
+      restartBtn: document.getElementById('restartBtn'),
+      achievement: document.getElementById('achievement'),
+      achievementText: document.getElementById('achievementText')
+    };
+    
+    // Colors
+    const colors = {
+      red: '#ff5e78',
+      blue: '#5e60ce',
+      green: '#06d6a0',
+      yellow: '#ffca3a',
+      purple: '#8338ec',
+      teal: '#64dfdf'
+    };
+    
+    // Initialize the game
+    function init() {
+      // Set up canvas
+      game.canvas = elements.gameCanvas;
+      game.ctx = game.canvas.getContext('2d');
+      resizeCanvas();
+      
+      // Event listeners
+      window.addEventListener('resize', resizeCanvas);
+      game.canvas.addEventListener('mousemove', handleMouseMove);
+      game.canvas.addEventListener('mousedown', handleMouseDown);
+      game.canvas.addEventListener('mouseup', handleMouseUp);
+      game.canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+      game.canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+      game.canvas.addEventListener('touchend', handleTouchEnd);
+      
+      elements.launchBtn.addEventListener('click', launchBubble);
+      elements.resetBtn.addEventListener('click', resetLevel);
+      elements.powerupBtn.addEventListener('click', activatePowerUp);
+      elements.startBtn.addEventListener('click', startGame);
+      elements.nextLevelBtn.addEventListener('click', nextLevel);
+      elements.restartBtn.addEventListener('click', restartGame);
+      
+      // Show welcome modal
+      elements.welcomeModal.classList.add('active');
+      
+      // Start animation loop
+      requestAnimationFrame(gameLoop);
+    }
+    
+    function resizeCanvas() {
+      const container = game.canvas.parentElement;
+      game.width = container.clientWidth;
+      game.height = container.clientHeight;
+      
+      game.canvas.width = game.width;
+      game.canvas.height = game.height;
+    }
+    
+    function startGame() {
+      elements.welcomeModal.classList.remove('active');
+      game.gameActive = true;
+      loadLevel(game.level);
+    }
+    
+    function resetLevel() {
+      loadLevel(game.level);
+    }
+    
+    function nextLevel() {
+      elements.levelCompleteModal.classList.remove('active');
+      game.level++;
+      
+      if (game.level > game.maxLevels) {
+        endGame();
+      } else {
+        loadLevel(game.level);
+      }
+    }
+    
+    function restartGame() {
+      elements.gameOverModal.classList.remove('active');
+      game.score = 0;
+      game.stars = 0;
+      game.level = 1;
+      updateUI();
+      loadLevel(1);
+    }
+    
+    function endGame() {
+      game.gameActive = false;
+      elements.finalScoreEl.textContent = game.score;
+      elements.totalStarsEl.textContent = game.stars;
+      elements.gameOverModal.classList.add('active');
+    }
+    
+    function loadLevel(levelNum) {
+      // Reset level state
+      game.bubbles = [];
+      game.targets = [];
+      game.obstacles = [];
+      game.powerUps = [];
+      game.particles = [];
+      game.bubblesRemaining = 5;
+      game.canLaunch = true;
+      game.activePowerUp = null;
+      
+      // Create level-specific elements
+      switch(levelNum) {
+        case 1:
+          game.levelObjective = 3;
+          game.levelObjectiveCompleted = 0;
+          
+          // Create targets
+          createTarget(game.width * 0.7, game.height * 0.3, 30, colors.red);
+          createTarget(game.width * 0.5, game.height * 0.4, 30, colors.blue);
+          createTarget(game.width * 0.8, game.height * 0.5, 30, colors.green);
+          
+          // Create obstacles
+          createObstacle(game.width * 0.5, game.height * 0.6, 100, 20);
+          break;
+          
+        case 2:
+          game.levelObjective = 4;
+          game.levelObjectiveCompleted = 0;
+          
+          // Create targets in a pattern
+          createTarget(game.width * 0.4, game.height * 0.2, 25, colors.red);
+          createTarget(game.width * 0.6, game.height * 0.2, 25, colors.blue);
+          createTarget(game.width * 0.8, game.height * 0.2, 25, colors.yellow);
+          createTarget(game.width * 0.5, game.height * 0.4, 25, colors.purple);
+          
+          // Create obstacles
+          createObstacle(game.width * 0.5, game.height * 0.5, 200, 15);
+          createObstacle(game.width * 0.3, game.height * 0.3, 15, 100);
+          createObstacle(game.width * 0.7, game.height * 0.3, 15, 100);
+          
+          // Add power-up
+          createPowerUp(game.width * 0.5, game.height * 0.7, 'bounce');
+          break;
+          
+        case 3:
+          game.levelObjective = 5;
+          game.levelObjectiveCompleted = 0;
+          
+          // Create targets in a challenging pattern
+          createTarget(game.width * 0.2, game.height * 0.2, 25, colors.red);
+          createTarget(game.width * 0.8, game.height * 0.2, 25, colors.red);
+          createTarget(game.width * 0.5, game.height * 0.3, 25, colors.blue);
+          createTarget(game.width * 0.3, game.height * 0.4, 25, colors.green);
+          createTarget(game.width * 0.7, game.height * 0.4, 25, colors.green);
+          
+          // Create complex obstacle pattern
+          createObstacle(game.width * 0.5, game.height * 0.5, 300, 10);
+          createObstacle(game.width * 0.3, game.height * 0.6, 10, 150);
+          createObstacle(game.width * 0.7, game.height * 0.6, 10, 150);
+          createObstacle(game.width * 0.5, game.height * 0.7, 150, 10);
+          
+          // Add power-up
+          createPowerUp(game.width * 0.5, game.height * 0.2, 'multi');
+          break;
+          
+        case 4:
+          game.levelObjective = 6;
+          game.levelObjectiveCompleted = 0;
+          
+          // Create a complex target arrangement
+          createTarget(game.width * 0.3, game.height * 0.2, 20, colors.red);
+          createTarget(game.width * 0.4, game.height * 0.2, 20, colors.blue);
+          createTarget(game.width * 0.5, game.height * 0.2, 20, colors.green);
+          createTarget(game.width * 0.6, game.height * 0.2, 20, colors.yellow);
+          createTarget(game.width * 0.7, game.height * 0.2, 20, colors.purple);
+          createTarget(game.width * 0.5, game.height * 0.4, 30, colors.teal);
+          
+          // Create a maze-like obstacle pattern
+          createObstacle(game.width * 0.2, game.height * 0.3, 100, 10);
+          createObstacle(game.width * 0.8, game.height * 0.3, 100, 10);
+          createObstacle(game.width * 0.3, game.height * 0.4, 10, 80);
+          createObstacle(game.width * 0.7, game.height * 0.4, 10, 80);
+          createObstacle(game.width * 0.4, game.height * 0.5, 200, 10);
+          createObstacle(game.width * 0.5, game.height * 0.6, 10, 100);
+          
+          // Add power-ups
+          createPowerUp(game.width * 0.2, game.height * 0.6, 'slow');
+          createPowerUp(game.width * 0.8, game.height * 0.6, 'explode');
+          break;
+          
+        case 5:
+          game.levelObjective = 10;
+          game.levelObjectiveCompleted = 0;
+          
+          // Create a challenging final level
+          for (let i = 0; i < 5; i++) {
+            createTarget(game.width * 0.2 + (i * 0.15), game.height * 0.2, 20, 
+                         Object.values(colors)[i % Object.values(colors).length]);
+          }
+          
+          for (let i = 0; i < 5; i++) {
+            createTarget(game.width * 0.2 + (i * 0.15), game.height * 0.3, 20, 
+                         Object.values(colors)[(i + 3) % Object.values(colors).length]);
+          }
+          
+          // Complex obstacle pattern
+          createObstacle(game.width * 0.3, game.height * 0.5, 250, 10);
+          createObstacle(game.width * 0.7, game.height * 0.5, 250, 10);
+          createObstacle(game.width * 0.2, game.height * 0.6, 10, 120);
+          createObstacle(game.width * 0.4, game.height * 0.6, 10, 120);
+          createObstacle(game.width * 0.6, game.height * 0.6, 10, 120);
+          createObstacle(game.width * 0.8, game.height * 0.6, 10, 120);
+          
+          // Add power-ups
+          createPowerUp(game.width * 0.3, game.height * 0.7, 'multi');
+          createPowerUp(game.width * 0.5, game.height * 0.7, 'slow');
+          createPowerUp(game.width * 0.7, game.height * 0.7, 'explode');
+          break;
+      }
+      
+      // Update UI
+      updateUI();
+    }
+    
+    function createTarget(x, y, radius, color) {
+      game.targets.push({
+        x,
+        y,
+        radius,
+        color,
+        hit: false,
+        opacity: 1
+      });
+    }
+    
+    function createObstacle(x, y, width, height) {
+      game.obstacles.push({
+        x,
+        y,
+        width,
+        height
+      });
+    }
+    
+    function createPowerUp(x, y, type) {
+      let color;
+      let icon;
+      
+      switch(type) {
+        case 'multi':
+          color = colors.blue;
+          icon = '×3';
+          break;
+        case 'slow':
+          color = colors.purple;
+          icon = '⏱️';
+          break;
+        case 'explode':
+          color = colors.red;
+          icon = '💥';
+          break;
+        case 'bounce':
+          color = colors.green;
+          icon = '↩️';
+          break;
+      }
+      
+      game.powerUps.push({
+        x,
+        y,
+        radius: 20,
+        type,
+        color,
+        icon,
+        collected: false
+      });
+    }
+    
+    function launchBubble() {
+      if (!game.canLaunch || game.bubblesRemaining <= 0) return;
+      
+      const launchX = 20;
+      const launchY = game.height - 20;
+      const powerFactor = 15;
+      
+      // Calculate velocity based on aim angle and power
+      const velocityX = Math.cos(game.aimAngle) * game.launchPower * powerFactor;
+      const velocityY = -Math.sin(game.aimAngle) * game.launchPower * powerFactor;
+      
+      // Create the bubble
+      const bubble = {
+        x: launchX,
+        y: launchY,
+        radius: 15,
+        velocityX,
+        velocityY,
+        color: Object.values(colors)[Math.floor(Math.random() * Object.values(colors).length)],
+        active: true
+      };
+      
+      if (game.activePowerUp === 'multi') {
+        // Launch multiple bubbles
+        game.activePowerUp = null;
+        elements.powerupBtn.disabled = true;
+        elements.powerupBtn.innerHTML = 'Power-Up';
+        
+        for (let i = -0.2; i <= 0.2; i += 0.2) {
+          const spreadAngle = game.aimAngle + i;
+          const vx = Math.cos(spreadAngle) * game.launchPower * powerFactor;
+          const vy = -Math.sin(spreadAngle) * game.launchPower * powerFactor;
+          
+          game.bubbles.push({
+            x: launchX,
+            y: launchY,
+            radius: 15,
+            velocityX: vx,
+            velocityY: vy,
+            color: bubble.color,
+            active: true
+          });
+        }
+      } else {
+        game.bubbles.push(bubble);
+      }
+      
+      // Apply slow power-up if active
+      if (game.activePowerUp === 'slow') {
+        game.gravity = 0.05;
+        game.activePowerUp = null;
+        elements.powerupBtn.disabled = true;
+        elements.powerupBtn.innerHTML = 'Power-Up';
+        
+        // Reset gravity after 3 seconds
+        setTimeout(() => {
+          game.gravity = 0.2;
+        }, 3000);
+      }
+      
+      // Apply explode power-up if active
+      if (game.activePowerUp === 'explode') {
+        bubble.isExplosive = true;
+        game.activePowerUp = null;
+        elements.powerupBtn.disabled = true;
+        elements.powerupBtn.innerHTML = 'Power-Up';
+      }
+      
+      game.bubblesRemaining--;
+      game.canLaunch = false;
+      updateUI();
+      
+      // Re-enable launching after a delay
+      setTimeout(() => {
+        game.canLaunch = true;
+      }, 1500);
+    }
+    
+    function activatePowerUp() {
+      if (game.activePowerUp) {
+        showAchievement(`${game.activePowerUp.charAt(0).toUpperCase() + game.activePowerUp.slice(1)} Power-Up Active!`);
+      }
+    }
+    
+    function showAchievement(text) {
+      elements.achievementText.textContent = text;
+      elements.achievement.classList.add('active');
+      
+      setTimeout(() => {
+        elements.achievement.classList.remove('active');
+      }, 2000);
+    }
+    
+    function checkCollisions() {
+      // Check bubble collisions with obstacles
+      game.bubbles.forEach(bubble => {
+        if (!bubble.active) return;
+        
+        // Check collision with walls
+        if (bubble.x - bubble.radius < 0) {
+          bubble.x = bubble.radius;
+          bubble.velocityX = Math.abs(bubble.velocityX) * game.bounceFactor;
+        } else if (bubble.x + bubble.radius > game.width) {
+          bubble.x = game.width - bubble.radius;
+          bubble.velocityX = -Math.abs(bubble.velocityX) * game.bounceFactor;
+        }
+        
+        if (bubble.y - bubble.radius < 0) {
+          bubble.y = bubble.radius;
+          bubble.velocityY = Math.abs(bubble.velocityY) * game.bounceFactor;
+        } else if (bubble.y + bubble.radius > game.height) {
+          bubble.y = game.height - bubble.radius;
+          bubble.velocityY = -Math.abs(bubble.velocityY) * game.bounceFactor;
+        }
+        
+        // Check collision with obstacles
+        game.obstacles.forEach(obstacle => {
+          // Calculate closest point on rectangle to circle
+          const closestX = Math.max(obstacle.x - obstacle.width / 2, Math.min(bubble.x, obstacle.x + obstacle.width / 2));
+          const closestY = Math.max(obstacle.y - obstacle.height / 2, Math.min(bubble.y, obstacle.y + obstacle.height / 2));
+          
+          // Calculate distance from closest point to circle center
+          const distanceX = bubble.x - closestX;
+          const distanceY = bubble.y - closestY;
+          const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+          
+          if (distance < bubble.radius) {
+            // Collision detected, calculate bounce angle
+            if (Math.abs(distanceX) > Math.abs(distanceY)) {
+              // Horizontal collision
+              bubble.velocityX = -bubble.velocityX * game.bounceFactor;
+              bubble.x = closestX + (distanceX > 0 ? bubble.radius : -bubble.radius);
+            } else {
+              // Vertical collision
+              bubble.velocityY = -bubble.velocityY * game.bounceFactor;
+              bubble.y = closestY + (distanceY > 0 ? bubble.radius : -bubble.radius);
+            }
+            
+            // Create particles on collision
+            createParticles(closestX, closestY, bubble.color, 5);
+          }
+        });
+        
+        // Check collision with targets
+        game.targets.forEach(target => {
+          if (target.hit) return;
+          
+          const dx = bubble.x - target.x;
+          const dy = bubble.y - target.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < bubble.radius + target.radius) {
+            // Target hit
+            target.hit = true;
+            game.levelObjectiveCompleted++;
+            game.score += 100;
+            
+            // Handle explosive bubbles
+            if (bubble.isExplosive) {
+              createParticles(target.x, target.y, target.color, 20);
+              // Affect nearby targets in blast radius
+              game.targets.forEach(otherTarget => {
+                if (!otherTarget.hit && otherTarget !== target) {
+                  const blastDx = otherTarget.x - target.x;
+                  const blastDy = otherTarget.y - target.y;
+                  const blastDistance = Math.sqrt(blastDx * blastDx + blastDy * blastDy);
+                  
+                  if (blastDistance < 100) {
+                    otherTarget.hit = true;
+                    game.levelObjectiveCompleted++;
+                    game.score += 50;
+                    createParticles(otherTarget.x, otherTarget.y, otherTarget.color, 10);
+                  }
+                }
+              });
+            } else {
+              createParticles(target.x, target.y, target.color, 10);
+            }
+            
+            showAchievement("Target Hit! +100");
+            updateUI();
+            
+            // Check if level complete
+            checkLevelCompletion();
+          }
+        });
+        
+        // Check collision with power-ups
+        game.powerUps.forEach(powerUp => {
+          if (powerUp.collected) return;
+          
+          const dx = bubble.x - powerUp.x;
+          const dy = bubble.y - powerUp.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < bubble.radius + powerUp.radius) {
+            // Power-up collected
+            powerUp.collected = true;
+            game.activePowerUp = powerUp.type;
+            elements.powerupBtn.disabled = false;
+            elements.powerupBtn.innerHTML = `Use ${powerUp.type.charAt(0).toUpperCase() + powerUp.type.slice(1)}`;
+            
+            createParticles(powerUp.x, powerUp.y, powerUp.color, 15);
+            showAchievement(`${powerUp.type.charAt(0).toUpperCase() + powerUp.type.slice(1)} Power-Up Collected!`);
+          }
+        });
+      });
+    }
+    
+    function createParticles(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1 + Math.random() * 3;
+        
+        game.particles.push({
+          x,
+          y,
+          radius: 2 + Math.random() * 3,
+          color,
+          velocityX: Math.cos(angle) * speed,
+          velocityY: Math.sin(angle) * speed,
+          opacity: 1,
+          life: 30 + Math.random() * 20
+        });
+      }
+    }
+    
+    function checkLevelCompletion() {
+      if (game.levelObjectiveCompleted >= game.levelObjective) {
+        // Calculate stars earned (based on bubbles remaining)
+        let starsEarned = 1;
+        if (game.bubblesRemaining >= 2) starsEarned = 2;
+        if (game.bubblesRemaining >= 4) starsEarned = 3;
+        
+        // Add stars to total
+        game.stars += starsEarned;
+        
+        // Update UI
+        elements.completedLevelEl.textContent = game.level;
+        elements.levelScoreEl.textContent = game.score;
+        elements.starsEarnedEl.textContent = starsEarned;
+        
+        // Show level complete modal
+        setTimeout(() => {
+          elements.levelCompleteModal.classList.add('active');
+        }, 1000);
+      }
+    }
+    
+    function updateUI() {
+      elements.scoreEl.textContent = game.score;
+      elements.starsEl.textContent = game.stars;
+      elements.currentLevelEl.textContent = game.level;
+    }
+    
+    function handleMouseMove(e) {
+      if (!game.gameActive) return;
+      
+      const rect = game.canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // Calculate aim angle
+      const launchX = 20;
+      const launchY = game.height - 20;
+      
+      const dx = mouseX - launchX;
+      const dy = launchY - mouseY;
+      game.aimAngle = Math.atan2(dy, dx);
+      
+      // Constrain angle (prevent aiming downward)
+      game.aimAngle = Math.max(0, Math.min(Math.PI, game.aimAngle));
+      
+      // Update launch power based on mouse distance if charging
+      if (game.isCharging) {
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        game.launchPower = Math.min(1, distance / 200);
+      }
+    }
+    
+    function handleMouseDown(e) {
+      if (!game.gameActive || !game.canLaunch || game.bubblesRemaining <= 0) return;
+      game.isCharging = true;
+      game.isAiming = true;
+    }
+    
+    function handleMouseUp(e) {
+      if (!game.gameActive || !game.canLaunch) return;
+      
+      if (game.isCharging && game.launchPower > 0.1) {
+        launchBubble();
+      }
+      
+      game.isCharging = false;
+      game.isAiming = false;
+      game.launchPower = 0;
+    }
+    
+    function handleTouchStart(e) {
+      if (!game.gameActive || !game.canLaunch || game.bubblesRemaining <= 0) return;
+      e.preventDefault();
+      
+      const touch = e.touches[0];
+      const rect = game.canvas.getBoundingClientRect();
+      const touchX = touch.clientX - rect.left;
+      const touchY = touch.clientY - rect.top;
+      
+      const launchX = 20;
+      const launchY = game.height - 20;
+      
+      const dx = touchX - launchX;
+      const dy = launchY - touchY;
+      
+      game.aimAngle = Math.atan2(dy, dx);
+      game.aimAngle = Math.max(0, Math.min(Math.PI, game.aimAngle));
+      
+      game.isCharging = true;
+      game.isAiming = true;
+    }
+    
+    function handleTouchMove(e) {
+      if (!game.gameActive || !game.canLaunch) return;
+      e.preventDefault();
+      
+      const touch = e.touches[0];
+      const rect = game.canvas.getBoundingClientRect();
+      const touchX = touch.clientX - rect.left;
+      const touchY = touch.clientY - rect.top;
+      
+      const launchX = 20;
+      const launchY = game.height - 20;
+      
+      const dx = touchX - launchX;
+      const dy = launchY - touchY;
+      
+      game.aimAngle = Math.atan2(dy, dx);
+      game.aimAngle = Math.max(0, Math.min(Math.PI, game.aimAngle));
+      
+      if (game.isCharging) {
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        game.launchPower = Math.min(1, distance / 200);
+      }
+    }
+    
+    function handleTouchEnd(e) {
+      if (!game.gameActive || !game.canLaunch) return;
+      
+      if (game.isCharging && game.launchPower > 0.1) {
+        launchBubble();
+      }
+      
+      game.isCharging = false;
+      game.isAiming = false;
+      game.launchPower = 0;
+    }
+    
+    function gameLoop() {
+      // Clear canvas
+      game.ctx.clearRect(0, 0, game.width, game.height);
+      
+      if (game.gameActive) {
+        // Draw background bubbles
+        drawBackgroundBubbles();
+        
+        // Draw obstacles
+        drawObstacles();
+        
+        // Draw targets
+        drawTargets();
+        
+        // Draw power-ups
+        drawPowerUps();
+        
+        // Draw aim line
+        if (game.isAiming && game.canLaunch) {
+          drawAimLine();
+        }
+        
+        // Update bubble physics
+        updateBubbles();
+        
+        // Update particles
+        updateParticles();
+        
+        // Check for collisions
+        checkCollisions();
+      }
+      
+      requestAnimationFrame(gameLoop);
+    }
+    
+    function drawBackgroundBubbles() {
+      // Create subtle background bubble effect
+      const time = Date.now() * 0.001;
+      for (let i = 0; i < 10; i++) {
+        const x = game.width * (0.1 + 0.8 * Math.sin(time * 0.1 + i * 0.5));
+        const y = game.height * (0.1 + 0.8 * Math.cos(time * 0.2 + i * 0.3));
+        const size = 20 + 10 * Math.sin(time + i);
+        
+        game.ctx.save();
+        game.ctx.globalAlpha = 0.05;
+        game.ctx.beginPath();
+        game.ctx.arc(x, y, size, 0, Math.PI * 2);
+        game.ctx.fillStyle = Object.values(colors)[i % Object.values(colors).length];
+        game.ctx.fill();
+        game.ctx.restore();
+      }
+    }
+    
+    function drawObstacles() {
+      game.obstacles.forEach(obstacle => {
+        game.ctx.save();
+        game.ctx.fillStyle = '#0a1128';
+        game.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        game.ctx.lineWidth = 2;
+        
+        // Draw with rounded corners
+        const radius = 5;
+        const x = obstacle.x - obstacle.width / 2;
+        const y = obstacle.y - obstacle.height / 2;
+        const width = obstacle.width;
+        const height = obstacle.height;
+        
+        game.ctx.beginPath();
+        game.ctx.moveTo(x + radius, y);
+        game.ctx.lineTo(x + width - radius, y);
+        game.ctx.arcTo(x + width, y, x + width, y + radius, radius);
+        game.ctx.lineTo(x + width, y + height - radius);
+        game.ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+        game.ctx.lineTo(x + radius, y + height);
+        game.ctx.arcTo(x, y + height, x, y + height - radius, radius);
+        game.ctx.lineTo(x, y + radius);
+        game.ctx.arcTo(x, y, x + radius, y, radius);
+        game.ctx.closePath();
+        
+        game.ctx.fill();
+        game.ctx.stroke();
+        game.ctx.restore();
+      });
+    }
+    
+    function drawTargets() {
+      game.targets.forEach(target => {
+        if (target.hit) {
+          // Draw hit target fading out
+          target.opacity = Math.max(0, target.opacity - 0.02);
+          
+          if (target.opacity > 0) {
+            game.ctx.save();
+            game.ctx.globalAlpha = target.opacity;
+            game.ctx.beginPath();
+            game.ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+            game.ctx.fillStyle = target.color;
+            game.ctx.fill();
+            game.ctx.restore();
+          }
+        } else {
+          // Draw active target with glow effect
+          game.ctx.save();
+          
+          // Glow effect
+          const gradient = game.ctx.createRadialGradient(
+            target.x, target.y, target.radius * 0.8,
+            target.x, target.y, target.radius * 1.5
+          );
+          gradient.addColorStop(0, target.color);
+          gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          
+          game.ctx.beginPath();
+          game.ctx.arc(target.x, target.y, target.radius * 1.5, 0, Math.PI * 2);
+          game.ctx.fillStyle = gradient;
+          game.ctx.globalAlpha = 0.3;
+          game.ctx.fill();
+          
+          // Target body
+          game.ctx.globalAlpha = 1;
+          game.ctx.beginPath();
+          game.ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+          game.ctx.fillStyle = target.color;
+          game.ctx.fill();
+          
+          // Highlight
+          game.ctx.beginPath();
+          game.ctx.arc(target.x - target.radius * 0.3, target.y - target.radius * 0.3, target.radius * 0.2, 0, Math.PI * 2);
+          game.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          game.ctx.fill();
+          
+          game.ctx.restore();
+        }
+      });
+    }
+    
+    function drawPowerUps() {
+      game.powerUps.forEach(powerUp => {
+        if (powerUp.collected) return;
+        
+        game.ctx.save();
+        
+        // Glow effect
+        const time = Date.now() * 0.002;
+        const pulse = 0.1 * Math.sin(time * 5);
+        
+        const gradient = game.ctx.createRadialGradient(
+          powerUp.x, powerUp.y, powerUp.radius * 0.5,
+          powerUp.x, powerUp.y, powerUp.radius * (1.5 + pulse)
+        );
+        gradient.addColorStop(0, powerUp.color);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        
+        game.ctx.beginPath();
+        game.ctx.arc(powerUp.x, powerUp.y, powerUp.radius * (1.5 + pulse), 0, Math.PI * 2);
+        game.ctx.fillStyle = gradient;
+        game.ctx.globalAlpha = 0.5;
+        game.ctx.fill();
+        
+        // Power-up body
+        game.ctx.globalAlpha = 1;
+        game.ctx.beginPath();
+        game.ctx.arc(powerUp.x, powerUp.y, powerUp.radius, 0, Math.PI * 2);
+        game.ctx.fillStyle = powerUp.color;
+        game.ctx.fill();
+        
+        // Power-up icon
+        game.ctx.fillStyle = 'white';
+        game.ctx.font = 'bold 18px Arial';
+        game.ctx.textAlign = 'center';
+        game.ctx.textBaseline = 'middle';
+        game.ctx.fillText(powerUp.icon, powerUp.x, powerUp.y);
+        
+        game.ctx.restore();
+      });
+    }
+    
+    function drawAimLine() {
+      const launchX = 20;
+      const launchY = game.height - 20;
+      const aimLength = 100 * game.launchPower;
+      
+      const endX = launchX + Math.cos(game.aimAngle) * aimLength;
+      const endY = launchY - Math.sin(game.aimAngle) * aimLength;
+      
+      game.ctx.save();
+      
+      // Draw dotted aim line
+      game.ctx.beginPath();
+      game.ctx.setLineDash([5, 5]);
+      game.ctx.moveTo(launchX, launchY);
+      game.ctx.lineTo(endX, endY);
+      game.ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      game.ctx.lineWidth = 2;
+      game.ctx.stroke();
+      
+      // Draw power indicator
+      game.ctx.beginPath();
+      game.ctx.arc(launchX, launchY, 20 * game.launchPower, 0, Math.PI * 2);
+      game.ctx.fillStyle = 'rgba(255, 94, 120, 0.3)';
+      game.ctx.fill();
+      
+      // Draw launcher
+      game.ctx.beginPath();
+      game.ctx.arc(launchX, launchY, 15, 0, Math.PI * 2);
+      game.ctx.fillStyle = colors.blue;
+      game.ctx.fill();
+      
+      game.ctx.restore();
+    }
+    
+    function updateBubbles() {
+      game.bubbles.forEach(bubble => {
+        if (!bubble.active) return;
+        
+        // Apply gravity
+        bubble.velocityY += game.gravity;
+        
+        // Apply friction
+        bubble.velocityX *= game.friction;
+        bubble.velocityY *= game.friction;
+        
+        // Update position
+        bubble.x += bubble.velocityX;
+        bubble.y += bubble.velocityY;
+        
+        // Check if bubble is out of bounds or stopped
+        const speed = Math.sqrt(bubble.velocityX * bubble.velocityX + bubble.velocityY * bubble.velocityY);
+        if (bubble.y > game.height + 100 || speed < 0.1) {
+          bubble.active = false;
+        }
+        
+        // Draw bubble
+        if (bubble.active) {
+          game.ctx.save();
+          
+          // Bubble body
+          game.ctx.beginPath();
+          game.ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+          game.ctx.fillStyle = bubble.color;
+          game.ctx.fill();
+          
+          // Highlight
+          game.ctx.beginPath();
+          game.ctx.arc(bubble.x - bubble.radius * 0.3, bubble.y - bubble.radius * 0.3, bubble.radius * 0.3, 0, Math.PI * 2);
+          game.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          game.ctx.fill();
+          
+          // Special effect for explosive bubbles
+          if (bubble.isExplosive) {
+            game.ctx.beginPath();
+            game.ctx.arc(bubble.x, bubble.y, bubble.radius * 1.3, 0, Math.PI * 2);
+            game.ctx.strokeStyle = colors.red;
+            game.ctx.lineWidth = 2;
+            game.ctx.stroke();
+            
+            // Pulsing effect
+            const time = Date.now() * 0.01;
+            const size = 1 + 0.1 * Math.sin(time);
+            
+            game.ctx.beginPath();
+            game.ctx.arc(bubble.x, bubble.y, bubble.radius * size, 0, Math.PI * 2);
+            game.ctx.strokeStyle = 'rgba(255, 94, 120, 0.5)';
+            game.ctx.stroke();
+          }
+          
+          game.ctx.restore();
+        }
+      });
+      
+      // Remove inactive bubbles
+      game.bubbles = game.bubbles.filter(bubble => bubble.active);
+    }
+    
+    function updateParticles() {
+      game.particles.forEach(particle => {
+        // Update position
+        particle.x += particle.velocityX;
+        particle.y += particle.velocityY;
+        
+        // Update life
+        particle.life--;
+        
+        // Update opacity
+        particle.opacity = particle.life / 50;
+        
+        // Draw particle
+        if (particle.life > 0) {
+          game.ctx.save();
+          game.ctx.globalAlpha = particle.opacity;
+          game.ctx.beginPath();
+          game.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+          game.ctx.fillStyle = particle.color;
+          game.ctx.fill();
+          game.ctx.restore();
+        }
+      });
+      
+      // Remove dead particles
+      game.particles = game.particles.filter(particle => particle.life > 0);
+    }
+    
+    // Initialize the game on window load
+    window.onload = init;
+  </script>
+</body>
+</html>
