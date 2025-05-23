@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+
+.icon-theme, .icon-alarm, .icon-timer, .icon-sound-on, .icon-sound-off, 
+.icon-settings, .icon-notification, .icon-weather, .icon-refresh,
+.icon-voice, .icon-hologram, .icon-gesture, .icon-assistant {
+    font-size: 1.5rem;
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+/* Futuristic Icon Styles */
+.icon-theme::before { content: '◉'; }
+.icon-alarm::before { content: '⏰'; }
+.icon-timer::before { content: '⏱'; }
+.icon-sound-on::before { content: '♫'; }
+.icon-sound-off::before { content: '♪'; }
+.icon-settings::before { content: '⚙'; }
+.icon-notification::before { content: '⟳'; }
+.icon-weather::before { content: '☁'; }
+.icon-refresh::before { content: '↻'; }
+.icon-voice::before { content: '◯'; }
+.icon-hologram::before { content: '◎'; }
+.icon-gesture::before { content: '⧓'; }
+.icon-assistant::before { content: '⦿'; }
+
+/* Additional icons for new features */
+.icon-ar::before { content: '◈'; }
+.icon-time-ai::before { content: '◬'; }
+.icon-security::before { content: '◭'; }
+.icon-customize::before { content: '◮'; }
+.icon-light::before { content: '◍'; }
+
+/* Futuristic glow effects for icons */
+@keyframes iconPulse {
+    0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+    50% { text-shadow: 0 0 15px var(--primary-color), 0 0 20px var(--primary-color); }
+    100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+}
+
+.control-btn span {
+    animation: iconPulse 3s infinite;
+}
+
+/* Theme-specific icon colors */
+body.neon-blue .control-btn span {
+    color: rgba(0, 120, 255, 0.8);
+}
+
+body.sunrise-gold .control-btn span {
+    color: rgba(255, 180, 0, 0.8);
+}
+
+body.matrix-green .control-btn span {
+    color: rgba(0, 255, 60, 0.8);
+}
+
+body.monochrome .control-btn span {
+    color: rgba(200, 200, 200, 0.8);
+}
+
+/* Active button state */
+.control-btn.active span {
+    animation: iconPulse 1.5s infinite;
+}
