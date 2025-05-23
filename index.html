@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="neon-blue">
+    <div class="container">
+        <div class="clock-container">
+            <div class="clock">
+                <div class="outer-circle"></div>
+                <div class="inner-circle"></div>
+                <div class="center-circle"></div>
+                
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="hand second-hand"></div>
+                
+                <div class="markers">
+                    <div class="marker marker-1"></div>
+                    <div class="marker marker-2"></div>
+                    <div class="marker marker-3"></div>
+                    <div class="marker marker-4"></div>
+                    <div class="marker marker-5"></div>
+                    <div class="marker marker-6"></div>
+                    <div class="marker marker-7"></div>
+                    <div class="marker marker-8"></div>
+                    <div class="marker marker-9"></div>
+                    <div class="marker marker-10"></div>
+                    <div class="marker marker-11"></div>
+                    <div class="marker marker-12"></div>
+                </div>
+                
+                <div class="digital-clock">
+                    <div class="time">00:00:00</div>
+                    <div class="date">Monday, January 1</div>
+                    <div class="timezone">UTC+00:00</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="themeBtn"><span class="icon-theme"></span></button>
+            <button class="control-btn" id="alarmBtn"><span class="icon-alarm"></span></button>
+            <button class="control-btn" id="timerBtn"><span class="icon-timer"></span></button>
+            <button class="control-btn" id="soundBtn"><span class="icon-sound-on"></span></button>
+            <button class="control-btn" id="settingsBtn"><span class="icon-settings"></span></button>
+            <button class="control-btn" id="notificationBtn"><span class="icon-notification"></span></button>
+            <button class="control-btn" id="weatherBtn"><span class="icon-weather"></span></button>
+            <button class="control-btn" id="voiceBtn"><span class="icon-voice"></span></button>
+            <button class="control-btn" id="hologramBtn"><span class="icon-hologram"></span></button>
+            <button class="control-btn" id="gestureBtn"><span class="icon-gesture"></span></button>
+            <button class="control-btn" id="aiBtn"><span class="icon-assistant"></span></button>
+        </div>
+        
+        <div class="modals-container">
+            <!-- Theme Modal -->
+            <div class="modal" id="themeModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Choose Theme</h2>
+                        <button class="close-modal" data-modal="themeModal">×</button>
+                    </div>
+                    <div class="theme-options">
+                        <div class="theme-option" data-theme="neon-blue">
+                            <div class="theme-preview neon-blue-preview"></div>
+                            <div class="theme-name">Neon Blue</div>
+                        </div>
+                        <div class="theme-option" data-theme="sunrise-gold">
+                            <div class="theme-preview sunrise-gold-preview"></div>
+                            <div class="theme-name">Sunrise Gold</div>
+                        </div>
+                        <div class="theme-option" data-theme="matrix-green">
+                            <div class="theme-preview matrix-green-preview"></div>
+                            <div class="theme-name">Matrix Green</div>
+                        </div>
+                        <div class="theme-option" data-theme="monochrome">
+                            <div class="theme-preview monochrome-preview"></div>
+                            <div class="theme-name">Monochrome</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Alarm Modal -->
+            <div class="modal" id="alarmModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Set Alarm</h2>
+                        <button class="close-modal" data-modal="alarmModal">×</button>
+                    </div>
+                    <div class="alarm-content">
+                        <div class="alarm-input">
+                            <input type="time" id="alarmTime" value="08:00">
+                            <button class="btn-set" id="setAlarmBtn">Set Alarm</button>
+                        </div>
+                        <div class="alarm-list">
+                            <h3>Active Alarms</h3>
+                            <div id="alarmsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timer Modal -->
+            <div class="modal" id="timerModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Timer</h2>
+                        <button class="close-modal" data-modal="timerModal">×</button>
+                    </div>
+                    <div class="timer-content">
+                        <div class="timer-display">
+                            <div class="timer-time">
+                                <input type="number" id="timerHours" min="0" max="23" value="0">
+                                <span class="timer-separator">:</span>
+                                <input type="number" id="timerMinutes" min="0" max="59" value="0">
+                                <span class="timer-separator">:</span>
+                                <input type="number" id="timerSeconds" min="0" max="59" value="0">
+                            </div>
+                            <div class="timer-labels">
+                                <span>Hours</span>
+                                <span>Minutes</span>
+                                <span>Seconds</span>
+                            </div>
+                        </div>
+                        <div class="timer-controls">
+                            <button class="btn-set" id="startTimerBtn">Start</button>
+                            <button class="btn-set" id="pauseTimerBtn" disabled>Pause</button>
+                            <button class="btn-set" id="resetTimerBtn" disabled>Reset</button>
+                        </div>
+                        <div class="timer-presets">
+                            <button class="timer-preset" data-time="60">1 min</button>
+                            <button class="timer-preset" data-time="300">5 min</button>
+                            <button class="timer-preset" data-time="600">10 min</button>
+                            <button class="timer-preset" data-time="1500">25 min</button>
+                        </div>
+                        <div class="pomodoro-section">
+                            <h3>Pomodoro Timer</h3>
+                            <div class="pomodoro-controls">
+                                <button class="btn-set" id="startPomodoroBtn">Start Pomodoro</button>
+                                <div class="pomodoro-status">
+                                    <span id="pomodoroStatus">Not active</span>
+                                    <span id="pomodoroCount"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Modal -->
+            <div class="modal" id="settingsModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Settings</h2>
+                        <button class="close-modal" data-modal="settingsModal">×</button>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-group">
+                            <h3>Clock Display</h3>
+                            <div class="setting">
+                                <label for="showSeconds">Show Seconds</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="showSeconds" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="setting">
+                                <label for="showDate">Show Date</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="showDate" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="setting">
+                                <label for="hourFormat">24-Hour Format</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="hourFormat">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <h3>Time Zone</h3>
+                            <div class="setting">
+                                <label for="timezoneSelect">Select Time Zone</label>
+                                <select id="timezoneSelect"></select>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <h3>Sound</h3>
+                            <div class="setting">
+                                <label for="tickingSound">Ticking Sound</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="tickingSound" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="setting">
+                                <label for="hourlyChime">Hourly Chime</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="hourlyChime">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="setting">
+                                <label for="volumeControl">Volume</label>
+                                <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.5">
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <h3>Appearance</h3>
+                            <div class="setting">
+                                <label for="clockSize">Clock Size</label>
+                                <input type="range" id="clockSize" min="0.8" max="1.2" step="0.1" value="1">
+                            </div>
+                            <div class="setting">
+                                <label for="clockOpacity">Clock Opacity</label>
+                                <input type="range" id="clockOpacity" min="0.5" max="1" step="0.1" value="1">
+                            </div>
+                            <div class="setting">
+                                <label for="dynamicBackground">Dynamic Background</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="dynamicBackground" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notification Modal -->
+            <div class="modal" id="notificationModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Notifications</h2>
+                        <button class="close-modal" data-modal="notificationModal">×</button>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-settings">
+                            <div class="setting">
+                                <label for="enableNotifications">Enable Notifications</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="enableNotifications" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="setting">
+                                <label for="notificationSound">Notification Sound</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="notificationSound" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="notification-center">
+                            <h3>Notification Center</h3>
+                            <div id="notificationList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weather Modal -->
+            <div class="modal" id="weatherModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Weather</h2>
+                        <button class="close-modal" data-modal="weatherModal">×</button>
+                    </div>
+                    <div class="weather-content">
+                        <div class="weather-current">
+                            <div class="weather-location">
+                                <span id="weatherLocation">Loading...</span>
+                                <button id="refreshWeatherBtn" class="refresh-btn">
+                                    <span class="icon-refresh"></span>
+                                </button>
+                            </div>
+                            <div class="weather-info">
+                                <div class="weather-icon" id="weatherIcon"></div>
+                                <div class="weather-temp">
+                                    <span id="weatherTemp">--</span>°<span id="tempUnit">C</span>
+                                </div>
+                            </div>
+                            <div class="weather-description" id="weatherDescription">Loading weather data...</div>
+                            <div class="weather-details">
+                                <div class="weather-detail">
+                                    <span class="detail-label">Humidity</span>
+                                    <span class="detail-value" id="weatherHumidity">--%</span>
+                                </div>
+                                <div class="weather-detail">
+                                    <span class="detail-label">Wind</span>
+                                    <span class="detail-value" id="weatherWind">-- km/h</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="weather-forecast">
+                            <h3>Forecast</h3>
+                            <div class="forecast-container" id="forecastContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Voice Control Modal -->
+            <div class="modal" id="voiceModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Voice Control</h2>
+                        <button class="close-modal" data-modal="voiceModal">×</button>
+                    </div>
+                    <div class="voice-content">
+                        <div class="voice-status">
+                            <div class="voice-indicator" id="voiceIndicator"></div>
+                            <div class="voice-status-text" id="voiceStatusText">Voice control inactive</div>
+                        </div>
+                        <button class="btn-set" id="startVoiceBtn">Activate Voice Control</button>
+                        <div class="voice-commands">
+                            <h3>Available Commands:</h3>
+                            <div class="command-list">
+                                <div class="command-item">
+                                    <div class="command-name">"What time is it?"</div>
+                                    <div class="command-desc">Speaks the current time</div>
+                                </div>
+                                <div class="command-item">
+                                    <div class="command-name">"Show date"</div>
+                                    <div class="command-desc">Speaks the current date</div>
+                                </div>
+                                <div class="command-item">
+                                    <div class="command-name">"Change theme to blue/gold/green/monochrome"</div>
+                                    <div class="command-desc">Changes the clock theme</div>
+                                </div>
+                                <div class="command-item">
+                                    <div class="command-name">"Set alarm for 7:30 AM"</div>
+                                    <div class="command-desc">Sets an alarm for the specified time</div>
+                                </div>
+                                <div class="command-item">
+                                    <div class="command-name">"Toggle sound"</div>
+                                    <div class="command-desc">Turns sound on/off</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hologram Modal -->
+            <div class="modal" id="hologramModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Holographic Display</h2>
+                        <button class="close-modal" data-modal="hologramModal">×</button>
+                    </div>
+                    <div class="hologram-content">
+                        <div class="setting">
+                            <label for="enableHologram">Enable Holographic Mode</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableHologram">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting">
+                            <label for="hologramIntensity">Effect Intensity</label>
+                            <input type="range" id="hologramIntensity" min="0.5" max="2" step="0.1" value="1">
+                        </div>
+                        <div class="hologram-preview">
+                            <div class="preview-text">Move your device to see the holographic effect</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gesture Control Modal -->
+            <div class="modal" id="gestureModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Gesture Control</h2>
+                        <button class="close-modal" data-modal="gestureModal">×</button>
+                    </div>
+                    <div class="gesture-content">
+                        <div class="setting">
+                            <label for="enableGestures">Enable Gesture Control</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableGestures">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="gesture-preview">
+                            <div class="video-container">
+                                <video id="gestureVideo" autoplay playsinline muted></video>
+                                <canvas id="gestureCanvas"></canvas>
+                                <div class="gesture-overlay" id="gestureOverlay"></div>
+                            </div>
+                            <div class="gesture-status" id="gestureStatus">Gesture control inactive</div>
+                        </div>
+                        <div class="gesture-instructions">
+                            <h3>Available Gestures:</h3>
+                            <div class="gesture-list">
+                                <div class="gesture-item">
+                                    <div class="gesture-icon">👈</div>
+                                    <div class="gesture-desc">Swipe Left: Previous theme</div>
+                                </div>
+                                <div class="gesture-item">
+                                    <div class="gesture-icon">👉</div>
+                                    <div class="gesture-desc">Swipe Right: Next theme</div>
+                                </div>
+                                <div class="gesture-item">
+                                    <div class="gesture-icon">👆</div>
+                                    <div class="gesture-desc">Swipe Up: Increase volume</div>
+                                </div>
+                                <div class="gesture-item">
+                                    <div class="gesture-icon">👇</div>
+                                    <div class="gesture-desc">Swipe Down: Decrease volume</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Assistant Modal -->
+            <div class="modal" id="aiModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>AI Assistant</h2>
+                        <button class="close-modal" data-modal="aiModal">×</button>
+                    </div>
+                    <div class="ai-content">
+                        <div class="ai-conversation">
+                            <div class="ai-messages" id="aiMessages">
+                                <div class="ai-message system">
+                                    Hello! I'm your NEXUS assistant. How can I help you today?
+                                </div>
+                            </div>
+                            <div class="ai-input">
+                                <input type="text" id="aiInput" placeholder="Ask me anything...">
+                                <button id="aiSendBtn" class="btn-set">Send</button>
+                                <button id="aiVoiceBtn" class="btn-voice">
+                                    <span class="icon-voice"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ai-suggestions">
+                            <div class="suggestion-chip" data-query="What can you do?">What can you do?</div>
+                            <div class="suggestion-chip" data-query="Set a timer for 5 minutes">Set a timer</div>
+                            <div class="suggestion-chip" data-query="Weather forecast">Weather forecast</div>
+                            <div class="suggestion-chip" data-query="Change theme">Change theme</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="voice-control.js"></script>
+    <script src="holographic-effect.js"></script>
+    <script src="gesture-control.js"></script>
+    <script src="ambient-light.js"></script>
+    <script src="ai-assistant.js"></script>
+    <script src="smart-notifications.js"></script>
+    <script src="predictive-time.js"></script>
+    <script src="customizable-faces.js"></script>
+    <script src="augmented-reality.js"></script>
+    <script src="biometric-auth.js"></script>
+</body>
+</html>
